@@ -1,19 +1,15 @@
 ## Linux setup
 For this project, the official Raspbian Buster Lite is being used.
 The main goal is to boot into a fullscreen chromium browser as soon as the pi starts.
- 
- 
+
 - Setup a headless pi with SSH over Wi-Fi (Step A)
-> https://desertbot.io/blog/headless-raspberry-pi-3-bplus-ssh-wifi-setup/  
- 
-   
+> https://desertbot.io/blog/headless-raspberry-pi-3-bplus-ssh-wifi-setup/
+
 - Setup a boot-to-chromium (kiosk mode + no-sleep) (Step B)
 > https://desertbot.io/blog/raspberry-pi-touchscreen-kiosk-setup/
 > Step 7 can be reused to add autostart script in the future
 
-
 - Start the Pi and connect via SSH
-
 
 - Install NodeJS
 ```
@@ -22,12 +18,10 @@ $ sudo apt install nodejs
 $ node --version
 ```
 
-
 - Install serve
 ```
 npm install -g serve
 ```
-
 
 - Start serve before chromium-browser
 ```
@@ -42,8 +36,8 @@ by this
 ```
 serve $APP_PATH -l 5000 &
 chromium-browser  --noerrdialogs --disable-infobars --kiosk http://localhost:5000
+// The http://localhost:5000 can be changed by your development server address
 ```
-
 
 Edit the `environment` file to add the `$APP_PATH` env var
 ```
@@ -54,10 +48,7 @@ Assuming your project's build folder is `/home/pi/mirror/build/`, add this line
 export APP_PATH=/home/pi/mirror/build/
 ```
 
-
 - Save everything and `$ sudo reboot`
-
-
 
 
 
