@@ -10,6 +10,7 @@ The main goal is to boot into a fullscreen chromium browser as soon as the pi st
 > Step 7 can be reused to add autostart script in the future
 
 - Start the Pi and connect via SSH
+> All steps below should be followed by the raspberry terminal
 
 - Install NodeJS
 ```
@@ -53,11 +54,22 @@ export APP_PATH=/home/pi/mirror/build/
 
 
 ## Apps setup
+- Create a dev account into AccuWeather website
+> https://developer.accuweather.com/
 
-get accuweather location key
-https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/search
-fulfill form items, send a request, ket the first "key" parameter from returned JSON
+- Create a new app in "MY APPS" to get a **API Key**
 
+- Get accuweather **Location key**
+> https://developer.accuweather.com/accuweather-locations-api/apis/get/locations/v1/cities/search
+> Fill form items, send a request, ket the first "key" parameter from returned JSON
+
+- API endpoints
+> Current Conditions: https://developer.accuweather.com/accuweather-current-conditions-api/apis/get/currentconditions/v1/%7BlocationKey%7D
+> 5-day Forecast: https://developer.accuweather.com/accuweather-forecast-api/apis/get/forecasts/v1/daily/5day/%7BlocationKey%7D
+
+- Edit `src/config.js` inserting your **API Key** as `WEATHER_API_KEY` value and your **Location key** as `WEATHER_LOCATION_KEY` value
+
+## About the project
 features
 - flat vector icons for any resolution display
 - custom layout from scratch
