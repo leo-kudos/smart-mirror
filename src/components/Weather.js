@@ -1,8 +1,14 @@
+/* eslint-disable max-statements */
 import React, { useState, useEffect } from 'react';
 import '../App.css';
 import { getWeatherData, getForecastData } from '../controllers/getWeatherData';
 import WeatherIcons from '../constants/WeatherIcons';
-import { WEATHER_ICON_DAY_COLOR, WEATHER_ICON_NIGHT_COLOR, WEATHER_CURRENT_UPDATE_INTERVAL, WEATHER_FORECAST_UPDATE_INTERVAL } from '../config';
+import {
+  WEATHER_ICON_DAY_COLOR, WEATHER_ICON_NIGHT_COLOR,
+  WEATHER_CURRENT_UPDATE_INTERVAL, WEATHER_FORECAST_UPDATE_INTERVAL,
+  WEATHER_LOCALSTORAGE_KEY, FORECAST_LOCALSTORAGE_KEY,
+  WEATHER_UPDATE_INTERVAL_ONERROR,
+} from '../config';
 import ForecastItem from './ForecastItem';
 
 const Weather = () => {
@@ -10,50 +16,85 @@ const Weather = () => {
   const [todayForecastData, setTodayForecastData] = useState({});
   const [iconColor, setIconColor] = useState(WEATHER_ICON_DAY_COLOR);
   const [forecastItems, setforecastItems] = useState([]);
+  const [error, setError] = useState(false);
+  const [localWeatherData, setLocalWeatherData] = useState(JSON.parse(localStorage.getItem(WEATHER_LOCALSTORAGE_KEY)));
+  const [localForecastData, setLocalForecastData] = useState(JSON.parse(localStorage.getItem(FORECAST_LOCALSTORAGE_KEY)));
 
   const [WtIconComponent, setWtIconComponent] = useState({
-    slot0: WeatherIcons.loading,
-    slot1: WeatherIcons.loading,
-    slot2: WeatherIcons.loading,
-    slot3: WeatherIcons.loading
+    slot0: WeatherIcons.loading
   });
 
-  useEffect(() => {
+  const updateLocalData = (data, key, setter) => {
+    localStorage.setItem(key, JSON.stringify(data));
+    setter(data);
+  };
 
-    const currentWeatherData = () => {
-      getWeatherData()
-      .then(result => {
-        console.log('getWeatherData', result);
-        setWeatherData(result);
-        setIconColor(result.isDayTime ? WEATHER_ICON_DAY_COLOR : WEATHER_ICON_NIGHT_COLOR);
-        setWtIconComponent({ slot0: WeatherIcons[result.icon] });
-      });
-      setTimeout(currentWeatherData, WEATHER_CURRENT_UPDATE_INTERVAL);
-    };
+  const setTodayData = data => {
+    setWeatherData(data);
+    setIconColor(data.isDayTime ? WEATHER_ICON_DAY_COLOR : WEATHER_ICON_NIGHT_COLOR);
+    setWtIconComponent({ slot0: WeatherIcons[data.icon] });
+    updateLocalData(data, WEATHER_LOCALSTORAGE_KEY, setLocalWeatherData);
+  };
 
-    const nextThreeDaysWeatherData = () => {
-      getForecastData()
+  const setForecastData = data => {
+    setTodayForecastData(data.forecast[0]);
+    const forecastItemsBuffer = [];
+    for (let lp = 1; lp <= 3; lp += 1) {
+      forecastItemsBuffer.push(
+        <ForecastItem
+          itemData={data.forecast[lp]}
+          key={lp}
+        />
+      );
+    }
+    setforecastItems(forecastItemsBuffer);
+    updateLocalData(data, FORECAST_LOCALSTORAGE_KEY, setLocalForecastData);
+  };
+
+  const currentWeatherData = () => {
+    getWeatherData()
       .then(result => {
-        console.log('gettodayForecastData', result);
-        setTodayForecastData(result.forecast[0]);
-        const forecastItemsBuffer = [];
-        for (let lp = 1; lp <= 3; lp++) {
-          forecastItemsBuffer.push(
-            <ForecastItem
-              itemData={result.forecast[lp]}
-              key={lp}
-            />
-          );
+        setTodayData(result);
+        setTimeout(currentWeatherData, WEATHER_CURRENT_UPDATE_INTERVAL);
+      })
+      .catch(() => {
+        if (localWeatherData) {
+          setTodayData(localWeatherData);
+          return;
         }
-        setforecastItems(forecastItemsBuffer);
+        setError(true);
+        setTimeout(currentWeatherData, WEATHER_UPDATE_INTERVAL_ONERROR);
       });
-      setTimeout(nextThreeDaysWeatherData, WEATHER_FORECAST_UPDATE_INTERVAL);
-    };
+  };
 
+  const nextThreeDaysWeatherData = () => {
+    getForecastData()
+      .then(result => {
+        setForecastData(result);
+        setTimeout(nextThreeDaysWeatherData, WEATHER_FORECAST_UPDATE_INTERVAL);
+      })
+      .catch(() => {
+        if (localForecastData) {
+          setForecastData(localForecastData);
+          return;
+        }
+        setError(true);
+        setTimeout(nextThreeDaysWeatherData, WEATHER_UPDATE_INTERVAL_ONERROR);
+      });
+  };
+
+  useEffect(() => {
     currentWeatherData();
     nextThreeDaysWeatherData();
-
   }, []);
+
+  if (error) {
+    return (
+      <div className="weather-container">
+        There was an error loading the weather data.
+      </div>
+    );
+  }
 
   return (
     <div className="weather-container">
@@ -63,16 +104,13 @@ const Weather = () => {
             <WtIconComponent.slot0 size={150} color={iconColor} className="current-icon" />
           </div>
           <div className="now-block">
-            <div className="city-update">
-              <p>{weatherData.city}, {weatherData.country} @ {weatherData.time}</p>
-            </div>
             <div className="now-temp">
               {weatherData.temp}°
             </div>
           </div>
         </div>
         <div className="description">
-          <p>{weatherData.description}</p>
+          <p>{weatherData.description} - Updated {weatherData.time}</p>
         </div>
         <div className="now-min-max">
           <span><b>Real</b> {weatherData.realFeelTemp}°</span>

@@ -90,9 +90,9 @@ export const getWeatherData = () => axios
       time: moment(data[0].EpochTime * 1000).format('HH:mm'),
       error: false
     }))
-  .catch(error => ({
-    error
-  }));
+  .catch(error => {
+    throw error;
+  });
 
 export const getForecastData = () => axios
   .get(`${WEATHER_API_FORECAST_URL}/${WEATHER_LOCATION_KEY}?apikey=${WEATHER_API_KEY}&language=${WEATHER_DATA_LANG}&details=true&metric=${WEATHER_UNIT_TYPE === 'Metric'}${useCache}`)
@@ -100,6 +100,6 @@ export const getForecastData = () => axios
         error: false,
         forecast: data.DailyForecasts.map(item => formatForecastData(item))
       }))
-  .catch(error => ({
-    error
-  }));
+  .catch(error => {
+    throw error;
+  });

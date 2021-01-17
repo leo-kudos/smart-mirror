@@ -7,7 +7,7 @@ import '../App.css';
 
 const Clock = () => {
   const getFormattedDate = () => {
-    const timeFormat = 'dddd,DD,MMM,HH:mm,YYYY';
+    const timeFormat = 'dddd,DD,MMM,HH,mm,YYYY';
     return moment().format(timeFormat).split(',');
   };
 
@@ -21,15 +21,23 @@ const Clock = () => {
     updateTime();
   }, []);
 
+  const renderTime = (
+    <div className="time">
+      {time[3]}
+      <b>:</b>
+      {time[4]}
+    </div>
+  );
+
   return (
     <div className="clock-container">
-      <div className="time">{time[3]}</div>
-      <div className="v-div"></div>
+      {renderTime}
+      {/* <div className="v-div"></div>
       <div className="day">
         <span>{time[0]}</span>
         <span>{time[1]}</span>
         <span>{time[2]}/{time[4]}</span>
-      </div>
+      </div> */}
     </div>
   );
 };

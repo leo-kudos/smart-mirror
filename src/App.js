@@ -12,7 +12,6 @@ const App = () => {
       <header className="App-header">
         <Clock />
         <Weather />
-        <Spotify />
       </header>
     </div>
   );

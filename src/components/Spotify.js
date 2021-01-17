@@ -5,8 +5,7 @@ import '../App.css';
 const Spotify = () => (
   <div className="spotify-item">
     <SpotifyPlayer
-      token="BQBCz2H_Kpj0Th7PjfNjCH36tIXJqHCCy00tP-4HWPw5YG2rsstL4aXyBfWrg-mr36zYEMfyGuMGanWQsgvxmytFK_DT1Ysx0lDvtcQCLCjLtpxlqwBlEhmSjlSeHVnF4LJUwNOQ2-jTe3nc9XxrBGpG4jIwl8Xo4V4kd3jvA1ffGhhasiQRkC32y6xv"
-      uris={['spotify:artist:6HQYnRM4OzToCYPpVBInuU']}
+      token="BQAludshmcmPUefu3tTrMmnID7ZumCl4xn-vqAVtTfXuELy5cl3hZytq3LZcbifYqWI-ZEc45-ihGRaGEh6pLDPNcV1vfBBq-O-IxzJANRSdjTu0GG8YDr93UYyivLR5WBXnahCM2_7J3shZQxS4F_jMmRS2nqydGqp2G1j3bEhPOrmwn9-EbRppZjNE"
       styles={{
         bgColor: '#fff',
         color: '#fff',
